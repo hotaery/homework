@@ -1,1 +1,9 @@
 build
+db
+log
+mr-tmp
+*.so
+mrcoordinator
+mrworker
+mrsequential
+output
