@@ -174,7 +174,7 @@ func (c *Coordinator) completeTask(args *common.CompleteTaskArgs, reply *common.
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if _, ok := c.taskMap[args.TaskName]; !ok {
-		log.Printf("recv task %s which belong to this mapreduce", args.TaskName)
+		log.Printf("recv task %s which not belong to this mapreduce", args.TaskName)
 		return nil
 	}
 	state := c.taskMap[args.TaskName].state
