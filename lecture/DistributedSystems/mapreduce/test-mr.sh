@@ -8,7 +8,7 @@
 # RACE=-race
 DATA="data"
 SCRIPT_DIR=`dirname $(readlink -f $0)`
-RECOMPILE="0"
+RECOMPILE="1"
 TEST=$1
 
 if [[ "$OSTYPE" = "darwin"* ]]
