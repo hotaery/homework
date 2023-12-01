@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
             "name": "Algorithm Debug",
             "type": "cppdbg",
             "request": "launch",
@@ -16,7 +24,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "lldb",
+            "MIMode": "gdb",
             "setupCommands": [
                 {
                     "description": "pretty print",
@@ -25,6 +33,6 @@
                 }
             ]
             //"preLaunchTask": "C/C++: bash"
-        }
+        },
     ]
 }
