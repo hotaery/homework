@@ -5,3 +5,4 @@
 ## 分类
 ### 线性模型
 - [感知机](perceptron.ipynb)
+- [线性回归](./linear_regression.ipynb)
