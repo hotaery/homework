@@ -5,6 +5,7 @@
 ## 分类
 - [感知机](perceptron.ipynb)
 - [逻辑回归](./logistic_regression.ipynb)
+- [支持向量机](./support_vector_machines.ipynb)
 
 ## 回归
 - [线性回归](./linear_regression.ipynb)
