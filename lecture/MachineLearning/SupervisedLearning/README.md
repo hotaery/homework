@@ -7,6 +7,8 @@
 - [逻辑回归](./logistic_regression.ipynb)
 - [支持向量机](./support_vector_machines.ipynb)
 - [朴素贝叶斯](./naive_bayes_classifier.ipynb)
+- [决策树](./decision_tree_and_regression_tree.ipynb)
 
 ## 回归
 - [线性回归](./linear_regression.ipynb)
+- [回归树](./decision_tree_and_regression_tree.ipynb)
