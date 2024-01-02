@@ -4,4 +4,5 @@
 
 ## 笔记列表
 
-- [介绍](./introduction.ipynb): 记录课程中需要用到torch的基本使用
+- [介绍](./introduction.ipynb): 一些理论知识点和实用的torch技巧
+
