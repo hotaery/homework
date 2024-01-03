@@ -5,4 +5,4 @@
 ## 笔记列表
 
 - [介绍](./introduction.ipynb): 一些理论知识点和实用的torch技巧
-
+- [线性回归](./linear_regression.ipynb)
