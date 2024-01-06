@@ -8,3 +8,6 @@ mrworker
 mrsequential
 output
 test.py
+utils
+.ipynb_checkpoints
+data
