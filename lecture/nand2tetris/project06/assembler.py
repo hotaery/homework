@@ -120,28 +120,6 @@ class Parser(object):
         self._current_command = Command()
         self._line = ""
 
-    def _parseLabel(self):
-        rom_addr = 0
-        for line in self._file:
-            line = line.strip()
-            # ignore white space and comment
-            if not line:
-                continue
-            if line[0] == '/':
-                assert line[1] == '/', f"Comment must be start with // but {line[0:2]}"
-                continue
-            if line[0] == '@':
-                # A-instruction
-                if line[1:].isdigit():
-                    rom_addr += 1
-            elif line[0] == '(':
-                # (LABEL)
-                assert line[-1] == ')' and len(line) > 2, "Label instruction must have (LABEL) format but {line}"
-                self._symbol_table.addEntry(line[1:-1], rom_addr)
-            else:
-                # C-instruction
-                rom_addr += 1
-
     def hasMoreCommands(self):
         for line in self._file:
             line = line[:-1]
