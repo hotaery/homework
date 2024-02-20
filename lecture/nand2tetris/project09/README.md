@@ -69,5 +69,6 @@
 
 ## 效果
 
-<video width="630" height="300" src="https://github.com/hotaery/homework/blob/master/lecture/nand2tetris/project09/Sudoku/imp.mp4"></video>
+https://github.com/hotaery/homework/assets/29942326/404dfe3f-b672-4691-b0c4-2f39c0a88415
+
 
