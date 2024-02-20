@@ -1,0 +1,455 @@
+class Board {
+    field int _shiftRight;
+    field Array _board;
+    field int _currentX;
+    field int _currentY;
+    field int _oldCurrentX;
+    field int _oldCurrentY;
+
+    constructor Board new(int shiftRight) {
+        var int i, j;
+        var Array subArr;
+        let i = 0;
+        let _shiftRight = shiftRight;
+        let _board = Array.new(9);
+        while (i < 9) {
+            let _board[i] = Array.new(9);
+            let subArr = _board[i];
+            let j = 0;
+            while (j < 9) {
+                let subArr[j] = 0;
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        let _currentX = 0;
+        let _currentY = 0;
+        let _oldCurrentX = -1;
+        let _oldCurrentY = -1;
+        return this;
+    }
+
+    method void drawBoundary() {
+        // 绘制边界
+        do Screen.setColor(true);
+        // top
+        do Screen.drawLine(_shiftRight, 0, _shiftRight + 255, 0);
+        do Screen.drawLine(_shiftRight, 1, _shiftRight + 255, 1);
+        // bottom
+        do Screen.drawLine(_shiftRight, 255, _shiftRight + 255, 255);
+        do Screen.drawLine(_shiftRight, 254, _shiftRight + 255, 254);
+        // left
+        do Screen.drawLine(_shiftRight, 0, _shiftRight, 255);
+        do Screen.drawLine(_shiftRight + 1, 0, _shiftRight + 1, 255);
+        // right
+        do Screen.drawLine(_shiftRight + 255, 0, _shiftRight + 255, 255);
+        do Screen.drawLine(_shiftRight + 254, 0, _shiftRight + 254, 255);
+        return;
+    }
+
+    function void drawCellBoundary(int x, int y) {
+        do Screen.setColor(true);
+        do Screen.drawLine(x, y, x + 27, y);
+        do Screen.drawLine(x, y + 1, x + 27, y + 1);
+        do Screen.drawLine(x, y + 27, x + 27, y + 27);
+        do Screen.drawLine(x, y + 26, x + 27, y + 26);
+        do Screen.drawLine(x, y, x, y + 27);
+        do Screen.drawLine(x + 1, y, x + 1, y + 27);
+        do Screen.drawLine(x + 27, y, x + 27, y + 27);
+        do Screen.drawLine(x + 26, y, x + 26, y + 27);
+        return;
+    }
+
+    function void drawCurrentCellBoundary(int x, int y) {
+        var boolean color;
+        var int i, x_, y_;
+        let color = true;
+        let i = 0;
+        let x_ = x;
+        let y_ = y;
+        while (i < 14) {
+            do Screen.setColor(color);
+            do Screen.drawRectangle(x_, y_, x_ + 1, y_ + 1);
+            let color = ~color;
+            let x_ = x_ + 2;
+            let i = i + 1;
+        }
+        let x_ = x_ - 2;
+        let y_ = y_ + 2;
+        let i = 0;
+        while (i < 13) {
+            do Screen.setColor(color);
+            do Screen.drawRectangle(x_, y_, x_ + 1, y_ + 1);
+            let y_ = y_ + 2;
+            let color = ~color;
+            let i = i + 1;
+        }
+        let x_ = x_ - 2;
+        let y_ = y_ - 2;
+        let i = 0;
+        while (i < 13) {
+            do Screen.setColor(color);
+            do Screen.drawRectangle(x_, y_, x_ + 1, y_ + 1);
+            let x_ = x_ - 2;
+            let color = ~color;
+            let i = i + 1;
+        }
+        let x_ = x_ + 2;
+        let y_ = y_ - 2;
+        let i = 0;
+        while (i < 12) {
+            do Screen.setColor(color);
+            do Screen.drawRectangle(x_, y_, x_ + 1, y_ + 1);
+            let y_ = y_ - 2;
+            let color = ~color;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    function void drawOne(int x, int y) {
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        do Screen.drawRectangle(x + 12, y + 6, x + 15, y + 21);
+        return;
+    }
+
+    function void drawTwo(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let x_ = x + 19;
+        let y_ = y + 8;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let x_ = x + 6;
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 15;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let y_ = y + 20;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        return;
+    }
+
+    function void drawThree(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 12, y_ + 1);
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 12, y_ + 1);
+        let y_ = y + 20;
+        do Screen.drawRectangle(x_, y_, x_ + 12, y_ + 1);
+        let x_ = x + 19;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        return;
+    }
+
+    function void drawFour(int x, int y) {
+        var int i, x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 15;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 2);
+        let x_ = x + 16;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        let x_ = x + 13;
+        let y_ = y + 6;
+        let i = 0;
+        while (i < 8) {
+            do Screen.drawRectangle(x_, y_, x_ + 3, y_);
+            let x_ = x_ - 1;
+            let y_ = y_ + 1;
+            let i = i + 1;
+        }
+        do Screen.drawRectangle(x_ + 1, y_, x_ + 3, y_);
+        return;
+    }
+
+    function void drawFive(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 8;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let x_ = x + 19;
+        let y_ = y + 15;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let x_ = x + 6;
+        let y_ = y + 20;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        return;
+    }
+
+    function void drawSix(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 8;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let x_ = x + 19;
+        let y_ = y + 15;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        let x_ = x + 6;
+        let y_ = y + 20;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let x_ = x + 6;
+        let y_ = y + 15;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 4);
+        return;
+    }
+
+    function void drawSeven(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 2);
+        let x_ = x + 19;
+        let y_ = y + 7;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        return;
+    }
+
+    function void drawEight(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 20;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 1);
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        let x_ = x + 19;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        return;
+    }
+
+    function void drawNine(int x, int y) {
+        var int x_, y_;
+        do Screen.setColor(true);
+        do Board.drawCellBoundary(x, y);
+        let x_ = x + 6;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 2);
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 8);
+        let y_ = y + 13;
+        do Screen.drawRectangle(x_, y_, x_ + 15, y_ + 2);
+        let x_ = x + 19;
+        let y_ = y + 6;
+        do Screen.drawRectangle(x_, y_, x_ + 2, y_ + 15);
+        return;
+    }
+
+    function void clearCell(int x, int y) {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + 27, y + 27);
+        return;
+    }
+
+    method void drawCell(int x, int y) {
+        var int val;
+        var Array subArr;
+        do Board.clearCell(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        let subArr = _board[y];
+        let val = subArr[x];
+        if (val = 0) {
+            do Board.drawCellBoundary(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        } 
+        if (val = 1) {
+            do Board.drawOne(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 2) {
+            do Board.drawTwo(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 3) {
+            do Board.drawThree(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 4) {
+            do Board.drawFour(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 5) {
+            do Board.drawFive(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 6) {
+            do Board.drawSix(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 7) {
+            do Board.drawSeven(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 8) {
+            do Board.drawEight(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        if (val = 9) {
+            do Board.drawNine(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        }
+        return;
+    }
+
+    method void heightlightCell(int x, int y) {
+        do Board.drawCurrentCellBoundary(_shiftRight + (x * 28) + 2, y * 28 + 2);
+        return; 
+    }
+
+    // public method
+    method void draw() {
+        var int i, j;
+        let i = 0;
+        do drawBoundary();
+        while (i < 9) {
+            let j = 0;
+            while (j < 9) {
+                do drawCell(i, j);
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        do heightlightCell(_currentX, _currentY);
+        return;
+    }
+
+    method void drawCurrentCell() {
+        if (~(_oldCurrentX = -1)) {
+            do drawCell(_oldCurrentX, _oldCurrentY);
+            let _oldCurrentX = -1;
+            let _oldCurrentY = -1;
+        }
+        do drawCell(_currentX, _currentY);
+        do heightlightCell(_currentX, _currentY);
+        return;
+    }
+
+    method void set(int x, int y, int val) {
+        var Array subArr;
+        let subArr = _board[y];
+        let subArr[x] = val;
+        return;
+    }
+
+    method void setCurrent(int val) {
+        do set(_currentX, _currentY, val);
+        return;
+    }
+
+    method int get(int x, int y) {
+        var Array subArr;
+        var int ans;
+        let subArr = _board[y];
+        let ans = subArr[x];
+        return ans; 
+    }
+
+    method int getCurrent() {
+        var int val;
+        let val = get(_currentX, _currentY);
+        return val;
+    }
+
+    method int getCurrentX() {
+        return _currentX;
+    }
+
+    method int getCurrentY() {
+        return _currentY;
+    }
+
+    method int getOldCurrentX() {
+        return _oldCurrentX;
+    }
+
+    method int getOldCurrentY() {
+        return _oldCurrentY;
+    }
+
+    method void moveUp() {
+        if (_currentY > 0) {
+            let _oldCurrentX = _currentX;
+            let _oldCurrentY = _currentY;
+            let _currentY = _currentY - 1;
+        }
+        return;
+    }
+
+    method void moveDown() {
+        if (_currentY < 8) {
+            let _oldCurrentX = _currentX;
+            let _oldCurrentY = _currentY;
+            let _currentY = _currentY + 1;
+        }
+        return;
+    }
+
+    method void moveLeft() {
+        if (_currentX > 0) {
+            let _oldCurrentX = _currentX;
+            let _oldCurrentY = _currentY;
+            let _currentX = _currentX - 1;
+        }
+        return;
+    }
+
+    method void moveRight() {
+        if (_currentX < 8) {
+            let _oldCurrentX = _currentX;
+            let _oldCurrentY = _currentY;
+            let _currentX = _currentX + 1;
+        }
+        return;
+    }
+
+    method boolean allFilled() {
+        var int i, j;
+        var Array subArr;
+        let i = 0;
+        while (i < 9) {
+            let subArr = _board[i];
+            let j = 0;
+            while (j < 9) {
+                if (subArr[j] = 0) {
+                    return false;
+                }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        return true;
+    }
+
+    method void dispose() {
+        var int i;
+        var Array subArr;
+        let i = 0;
+        while (i < 9) {
+            let subArr = _board[i];
+            do subArr.dispose();
+            let i = i + 1;
+        }
+        do Screen.clearScreen();
+        do _board.dispose();
+        do Memory.dealloc(this);
+        return;
+    }
+}
