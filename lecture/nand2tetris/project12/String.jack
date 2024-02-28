@@ -1,0 +1,131 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/String.jack
+
+/**
+ * Represents character strings. In addition for constructing and disposing
+ * strings, the class features methods for getting and setting individual
+ * characters of the string, for erasing the string's last character,
+ * for appending a character to the string's end, and more typical
+ * string-oriented operations.
+ */
+class String {
+    field int _length;
+    field int _end;
+    field Array _memory;
+
+    /** constructs a new empty string with a maximum length of maxLength
+     *  and initial length of 0. */
+    constructor String new(int maxLength) {
+        if (maxLength > 0) {
+            let _memory = Memory.alloc(maxLength);
+        }
+        let _length = maxLength;
+        let _end = 0;
+        return this;
+    }
+
+    /** Disposes this string. */
+    method void dispose() {
+        if (_length > 0) {
+            do Memory.deAlloc(_memory);
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Returns the current length of this string. */
+    method int length() {
+        return _end;
+    }
+
+    /** Returns the character at the j-th location of this string. */
+    method char charAt(int j) {
+        return _memory[j];
+    }
+
+    /** Sets the character at the j-th location of this string to c. */
+    method void setCharAt(int j, char c) {
+        let _memory[j] = c;
+        return;
+    }
+
+    /** Appends c to this string's end and returns this string. */
+    method String appendChar(char c) {
+        let _memory[_end] = c;
+        let _end = _end + 1;
+        return this;
+    }
+
+    /** Erases the last character from this string. */
+    method void eraseLastChar() {
+        if (_end > 0) {
+            let _end = _end - 1;
+        }
+        return;
+    }
+
+    /** Returns the integer value of this string, 
+     *  until a non-digit character is detected. */
+    method int intValue() {
+        var int n, i;
+        var boolean neg;
+        let n = 0;
+        let i = 0;
+        let neg = false;
+        if (_memory[i] = 45) {
+            let neg = true;
+            let i = i + 1;
+        }
+        while ((i < _end) & (_memory[i] > 47) & (_memory[i] < 58)) {
+            let n = n * 10 + (_memory[i] - 48);
+            let i = i + 1;
+        }
+        if (neg) {
+            let n = -n;
+        }
+        return n;
+    }
+
+    /** Sets this string to hold a representation of the given value. */
+    method void _setInt(int val) {
+        var int lastDigit, c;
+        if (val < 0) {
+            do appendChar(45);
+            do _setInt(Math.abs(val));
+            return;
+        }  
+
+        if (val < 10) {
+            do appendChar(48 + val);
+            return;
+        } 
+
+        do _setInt(val / 10);
+        let lastDigit = val - (10 * (val / 10));
+        do appendChar(48 + lastDigit);
+        return;
+    }
+
+    method void setInt(int val) {
+        let _end = 0;
+        do _setInt(val);
+        return;
+    }
+
+    /** Returns the new line character. */
+    function char newLine() {
+        return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+        return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+        return 34;
+    }
+}
