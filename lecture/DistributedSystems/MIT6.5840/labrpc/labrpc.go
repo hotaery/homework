@@ -1,7 +1,7 @@
 package labrpc
 
 //
-// channel-based RPC, for 824 labs.
+// channel-based RPC, for 6.5840 labs.
 //
 // simulates a network that can lose requests, lose replies,
 // delay messages, and entirely disconnect particular hosts.
@@ -59,7 +59,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"homework/lecture/DistributedSystems/labgob"
+	"labgob"
 )
 
 type reqMsg struct {
@@ -93,7 +93,9 @@ func (e *ClientEnd) Call(svcMeth string, args interface{}, reply interface{}) bo
 
 	qb := new(bytes.Buffer)
 	qe := labgob.NewEncoder(qb)
-	qe.Encode(args)
+	if err := qe.Encode(args); err != nil {
+		panic(err)
+	}
 	req.args = qb.Bytes()
 
 	//
@@ -210,23 +212,20 @@ func (rn *Network) isServerDead(endname interface{}, servername interface{}, ser
 	rn.mu.Lock()
 	defer rn.mu.Unlock()
 
-	if rn.enabled[endname] == false || rn.servers[servername] != server {
-		return true
-	}
-	return false
+	return !rn.enabled[endname] || rn.servers[servername] != server
 }
 
 func (rn *Network) processReq(req reqMsg) {
 	enabled, servername, server, reliable, longreordering := rn.readEndnameInfo(req.endname)
 
 	if enabled && servername != nil && server != nil {
-		if reliable == false {
+		if !reliable {
 			// short delay
 			ms := (rand.Int() % 27)
 			time.Sleep(time.Duration(ms) * time.Millisecond)
 		}
 
-		if reliable == false && (rand.Int()%1000) < 100 {
+		if !reliable && (rand.Int()%1000) < 100 {
 			// drop the request, return as if timeout
 			req.replyCh <- replyMsg{false, nil}
 			return
@@ -248,7 +247,7 @@ func (rn *Network) processReq(req reqMsg) {
 		var reply replyMsg
 		replyOK := false
 		serverDead := false
-		for replyOK == false && serverDead == false {
+		for !replyOK && !serverDead {
 			select {
 			case reply = <-ech:
 				replyOK = true
@@ -270,13 +269,13 @@ func (rn *Network) processReq(req reqMsg) {
 		// DeleteServer() before superseding the Persister.
 		serverDead = rn.isServerDead(req.endname, servername, server)
 
-		if replyOK == false || serverDead == true {
+		if !replyOK || serverDead {
 			// server was killed while we were waiting; return error.
 			req.replyCh <- replyMsg{false, nil}
-		} else if reliable == false && (rand.Int()%1000) < 100 {
+		} else if !reliable && (rand.Int()%1000) < 100 {
 			// drop the reply, return as if timeout
 			req.replyCh <- replyMsg{false, nil}
-		} else if longreordering == true && rand.Intn(900) < 600 {
+		} else if longreordering && rand.Intn(900) < 600 {
 			// delay the response for a while
 			ms := 200 + rand.Intn(1+rand.Intn(2000))
 			// Russ points out that this timer arrangement will decrease
@@ -328,6 +327,18 @@ func (rn *Network) MakeEnd(endname interface{}) *ClientEnd {
 	rn.connections[endname] = nil
 
 	return e
+}
+
+func (rn *Network) DeleteEnd(endname interface{}) {
+	rn.mu.Lock()
+	defer rn.mu.Unlock()
+
+	if _, ok := rn.ends[endname]; !ok {
+		log.Fatalf("MakeEnd: %v doesn't exists\n", endname)
+	}
+	delete(rn.ends, endname)
+	delete(rn.enabled, endname)
+	delete(rn.connections, endname)
 }
 
 func (rn *Network) AddServer(servername interface{}, rs *Server) {
@@ -419,7 +430,7 @@ func (rs *Server) dispatch(req reqMsg) replyMsg {
 		return service.dispatch(methodName, req)
 	} else {
 		choices := []string{}
-		for k, _ := range rs.services {
+		for k := range rs.services {
 			choices = append(choices, k)
 		}
 		log.Fatalf("labrpc.Server.dispatch(): unknown service %v in %v.%v; expecting one of %v\n",
@@ -466,6 +477,8 @@ func MakeService(rcvr interface{}) *Service {
 			// the method is not suitable for a handler
 			//fmt.Printf("bad method: %v\n", mname)
 		} else {
+			// export method
+			//
 			// the method looks like a handler
 			svc.methods[mname] = method
 		}
@@ -502,7 +515,7 @@ func (svc *Service) dispatch(methname string, req reqMsg) replyMsg {
 		return replyMsg{true, rb.Bytes()}
 	} else {
 		choices := []string{}
-		for k, _ := range svc.methods {
+		for k := range svc.methods {
 			choices = append(choices, k)
 		}
 		log.Fatalf("labrpc.Service.dispatch(): unknown method %v in %v; expecting one of %v\n",

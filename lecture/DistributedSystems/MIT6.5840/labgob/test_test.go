@@ -1,8 +1,9 @@
 package labgob
 
-import "testing"
-
-import "bytes"
+import (
+	"bytes"
+	"testing"
+)
 
 type T1 struct {
 	T1int0    int
@@ -21,9 +22,7 @@ type T3 struct {
 	T3int999 int
 }
 
-//
 // test that we didn't break GOB.
-//
 func TestGOB(t *testing.T) {
 	e0 := errorCount
 
@@ -36,9 +35,9 @@ func TestGOB(t *testing.T) {
 		x1 := 1
 		t1 := T1{}
 		t1.T1int1 = 1
-		t1.T1string1 = "6.824"
+		t1.T1string1 = "6.5840"
 		t2 := T2{}
-		t2.T2slice = []T1{T1{}, t1}
+		t2.T2slice = []T1{{}, t1}
 		t2.T2map = map[int]*T1{}
 		t2.T2map[99] = &T1{1, 2, "x", "y"}
 		t2.T2t3 = T3{999}
@@ -81,7 +80,7 @@ func TestGOB(t *testing.T) {
 		if t1.T1string0 != "" {
 			t.Fatalf("wrong t1.T1string0 %v\n", t1.T1string0)
 		}
-		if t1.T1string1 != "6.824" {
+		if t1.T1string1 != "6.5840" {
 			t.Fatalf("wrong t1.T1string1 %v\n", t1.T1string1)
 		}
 		if len(t2.T2slice) != 2 {
@@ -112,10 +111,8 @@ type T4 struct {
 	no  int
 }
 
-//
 // make sure we check capitalization
 // labgob prints one warning during this test.
-//
 func TestCapital(t *testing.T) {
 	e0 := errorCount
 
@@ -136,13 +133,11 @@ func TestCapital(t *testing.T) {
 	}
 }
 
-//
 // check that we warn when someone sends a default value over
 // RPC but the target into which we're decoding holds a non-default
 // value, which GOB seems not to overwrite as you'd expect.
 //
 // labgob does not print a warning.
-//
 func TestDefault(t *testing.T) {
 	e0 := errorCount
 
