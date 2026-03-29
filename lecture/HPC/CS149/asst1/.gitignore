@@ -1,0 +1,11 @@
+objs
+mandelbrot
+*.ppm
+*.o
+myexp
+sqrt
+saxpy
+kmeans
+start.log
+end.log
+data.dat
